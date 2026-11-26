@@ -1,7 +1,7 @@
 {
   "name": "agent-handoff-mcp",
-  "version": "0.2.1",
-  "description": "Cross-agent isolated conversation handoff MCP server, CLI, and Skill for Antigravity, Codex, Trae, WorkBuddy, Claude Code, Cursor, and Web AI.",
+  "version": "0.3.0",
+  "description": "AI Agent 交接、上下文共享与对话接续 / Cross-agent handoff MCP server, CLI and Skill for Codex, Claude Code, Cursor and Antigravity.",
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -14,17 +14,21 @@
     "trae",
     "workbuddy",
     "claude-code",
-    "cursor"
+    "cursor",
+    "agent-handoff",
+    "ai-agent-handoff",
+    "context-handoff",
+    "conversation-transfer"
   ],
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/648428732qq-sketch/agent-handoff-mcp.git"
+    "url": "git+https://github.com/648428732qq-sketch/ai-agent-handoff-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/648428732qq-sketch/agent-handoff-mcp/issues"
+    "url": "https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/issues"
   },
-  "homepage": "https://github.com/648428732qq-sketch/agent-handoff-mcp#readme",
+  "homepage": "https://github.com/648428732qq-sketch/ai-agent-handoff-mcp#readme",
   "type": "module",
   "main": "dist/src/cli.js",
   "bin": {

@@ -1,21 +1,54 @@
-MIT License
+Attribution and No-Resale License 1.0
 
-Copyright (c) 2026 agent-handoff-mcp contributors
+Copyright (c) 2026 648428732qq-sketch and contributors.
+Upstream: https://github.com/648428732qq-sketch/ai-agent-handoff-mcp
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license applies to distributions expressly carrying this license,
+beginning with version 0.3.0, subject to the prior-license exception below.
+"Software" means the project code and accompanying documentation covered
+by this license. Third-party components are excluded.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Permission
+Permission is granted, without a license fee, to use, copy, modify and
+redistribute original or modified copies of the Software without charge,
+subject to the conditions below.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. Attribution and notices
+When reposting, sharing or distributing the Software or substantial parts
+of it, retain this license and existing copyright notices, identify
+648428732qq-sketch as the original project author, and include the upstream
+repository URL in the accompanying README, documentation or publication.
+Clearly identify material modifications and do not imply author endorsement.
+
+3. No resale or paid redistribution
+Without prior written permission from the author, you may not sell,
+license for a fee, or charge for access to, downloading or distribution
+of copies of the Software or substantial parts of it. This restriction
+also applies to renamed, modified, repackaged or bundled copies.
+Commercial use that does not involve paid redistribution is permitted,
+including internal organizational use and independent consulting or
+support services that do not charge for distributing the Software.
+
+4. Earlier licenses and third-party components
+These terms do not revoke or restrict rights already granted under MIT
+or another license. Versions 0.2.1 and earlier were distributed under MIT;
+their original code and copies obtained under MIT retain those rights,
+including MIT's commercial redistribution permissions. The original MIT
+notice is preserved in docs/legal/mit-legacy-notice.txt. This license does not override
+that notice for material previously licensed under MIT.
+Third-party components retain their own copyright notices and licenses.
+
+5. Disclaimer
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+AND NON-INFRINGEMENT. TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE AUTHORS
+AND COPYRIGHT HOLDERS SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.
+
+中文说明
+本许可要求转载、分享或分发时保留作者署名、上游仓库链接及授权文件。
+允许免费使用、修改及免费分发；未经作者书面许可，禁止将原版、改名版、
+修改版或重新打包版本进行二次售卖或收费分发。企业内部使用以及不对软件
+副本分发收费的独立咨询、支持服务可以进行。
+0.2.1 及更早版本和已按 MIT 授权的原有代码继续保留原授权权利，不追溯撤回。
+第三方组件仍按各自许可处理。中英文如有歧义，以英文条款为准。

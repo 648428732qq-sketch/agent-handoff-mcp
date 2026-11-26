@@ -1,6 +1,6 @@
 # 高级配置与开发教程
 
-日常使用先看[README 快速开始](https://github.com/648428732qq-sketch/agent-handoff-mcp#readme)。本文面向需要自定义目录、手动配置、排查冲突或参与开发的用户，适用于 0.2.0 及之后版本。
+日常使用先看[README 快速开始](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp#readme)。本文面向需要自定义目录、手动配置、排查冲突或参与开发的用户，适用于 0.2.0 及之后版本。
 
 ## 安装选项与重复运行
 
@@ -85,7 +85,7 @@ npx -y agent-handoff-mcp@latest init --target trae
 npx -y agent-handoff-mcp@latest init --target workbuddy
 ```
 
-这些目标输出 JSON，需用户在对应客户端的 MCP 设置中手动填写。安装器不承诺为其自动写入配置或安装 Skill。支持 Agent Skills 的客户端可按自己的规范安装仓库中的 [SKILL.md](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/SKILL.md)，或使用已有的等价交接规则。
+这些目标输出 JSON，需用户在对应客户端的 MCP 设置中手动填写。安装器不承诺为其自动写入配置或安装 Skill。支持 Agent Skills 的客户端可按自己的规范安装仓库中的 [SKILL.md](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/SKILL.md)，或使用已有的等价交接规则。
 
 ## 目录、Obsidian 与跨设备
 
@@ -191,30 +191,30 @@ Skill 引导 Agent 只在明确要求交接时保存；恢复时按主题加载�
 开发需要 Node.js 20 或以上、npm 和 Git：
 
 ```bash
-git clone https://github.com/648428732qq-sketch/agent-handoff-mcp.git
-cd agent-handoff-mcp
+git clone https://github.com/648428732qq-sketch/ai-agent-handoff-mcp.git
+cd ai-agent-handoff-mcp
 npm ci
 npm run build
 node dist/src/cli.js --help
 npm test
 ```
 
-使用源码部署时，将手动 MCP 配置的 `command` 改为 `node`，`args` 改为编译入口的绝对路径，例如 `["C:/work/agent-handoff-mcp/dist/src/cli.js"]`；保留同样的 `env`。终端示例中的 `npx -y agent-handoff-mcp@latest` 可替换为 `node dist/src/cli.js`，从仓库根目录运行。
+使用源码部署时，将手动 MCP 配置的 `command` 改为 `node`，`args` 改为编译入口的绝对路径，例如 `["C:/work/ai-agent-handoff-mcp/dist/src/cli.js"]`；保留同样的 `env`。终端示例中的 `npx -y agent-handoff-mcp@latest` 可替换为 `node dist/src/cli.js`，从仓库根目录运行。
 
 项目使用 TypeScript：MCP 接口在 `src/server.ts`，CLI 在 `src/cli.ts`，安装逻辑在 `src/init.ts`，Markdown 存储在 `src/store.ts`，存储抽象在 `src/types.ts`。`npm test` 先编译再运行测试；CI 覆盖 Windows、Linux 的 Node.js 20／22，本机验证使用 Node.js 24。自动化测试与 stdio 联通检查不等同于所有客户端界面的完整接入测试。
 
 ## 提交问题和贡献代码
 
-通过 [Bug 表单](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=bug_report.yml)或[功能建议](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=feature_request.yml)反馈。先看[已有 Issues](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues)，再写明客户端、系统、Node.js 版本、复现步骤、预期与实际结果；能运行诊断时可附核对过的报告，安装失败时直接描述错误即可。
+通过 [Bug 表单](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/issues/new?template=bug_report.yml)或[功能建议](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/issues/new?template=feature_request.yml)反馈。先看[已有 Issues](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/issues)，再写明客户端、系统、Node.js 版本、复现步骤、预期与实际结果；能运行诊断时可附核对过的报告，安装失败时直接描述错误即可。
 
 仓库开放 Issues 和 Fork。登录自己的 GitHub 账号后：
 
-1. [Fork 本项目](https://github.com/648428732qq-sketch/agent-handoff-mcp/fork)，创建个人副本。
+1. [Fork 本项目](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/fork)，创建个人副本。
 2. 将下面的 `YOUR_USERNAME` 换成自己的用户名，新建分支。
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/agent-handoff-mcp.git
-cd agent-handoff-mcp
+git clone https://github.com/YOUR_USERNAME/ai-agent-handoff-mcp.git
+cd ai-agent-handoff-mcp
 git switch -c fix/describe-change
 npm ci
 ```
@@ -228,7 +228,7 @@ git commit -m "fix: describe your change"
 git push -u origin fix/describe-change
 ```
 
-4. 打开[提交 PR](https://github.com/648428732qq-sketch/agent-handoff-mcp/compare)，选择 “compare across forks”。目标为 `648428732qq-sketch/agent-handoff-mcp` 的 `main`，来源为个人 Fork 的修改分支。
+4. 打开[提交 PR](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/compare)，选择 “compare across forks”。目标为 `648428732qq-sketch/ai-agent-handoff-mcp` 的 `main`，来源为个人 Fork 的修改分支。
 5. 描述问题、修改后的行为和验证结果；关联已有 Issue 可写 `关联 #编号`。维护者审核后合并，后续调整继续推送同一分支。
 
-[MIT License](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/LICENSE)
+授权与转载要求见 [LICENSE](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/LICENSE)。免费分享需署名并附来源链接，未经作者书面许可禁止二次售卖。0.2.1 及更早版本保留原有 MIT 授权，见 [历史许可](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/docs/legal/mit-legacy-notice.txt)。

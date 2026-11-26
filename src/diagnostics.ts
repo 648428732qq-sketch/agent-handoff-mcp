@@ -5,7 +5,7 @@ import { createRequire } from "node:module";
 import { DiagnosticsLogger, sanitizeText } from "./logger.js";
 import { LocalMarkdownStore } from "./store.js";
 
-export const REPO_SLUG = "648428732qq-sketch/agent-handoff-mcp";
+export const REPO_SLUG = "648428732qq-sketch/ai-agent-handoff-mcp";
 export const PACKAGE_VERSION: string = createRequire(import.meta.url)(
   "../../package.json"
 ).version;

@@ -1,8 +1,12 @@
-# agent-handoff-mcp
+# AI Agent 交接助手 · ai-agent-handoff-mcp
 
 把一个 AI 对话的进展交给另一个 Agent：说“交接 主题”，保存独立 Markdown；换一个 Agent 说“继续 主题”，接着做。
 
-[提交问题](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=bug_report.yml) · [功能建议](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=feature_request.yml) · [Fork](https://github.com/648428732qq-sketch/agent-handoff-mcp/fork) · [提交 PR](https://github.com/648428732qq-sketch/agent-handoff-mcp/compare) · [npm](https://www.npmjs.com/package/agent-handoff-mcp)
+用于 Codex、Claude Code、Cursor、Antigravity 之间的 **AI Agent 交接、上下文共享和对话接续**（AI agent handoff / context sharing）。
+
+**转载需注明来源，未经许可禁止二次售卖。** 具体适用范围与历史版本说明见文末授权条款。
+
+[提交问题](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/issues/new?template=bug_report.yml) · [功能建议](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/issues/new?template=feature_request.yml) · [Fork](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/fork) · [提交 PR](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/compare) · [npm](https://www.npmjs.com/package/agent-handoff-mcp)
 
 ## 安装
 
@@ -83,7 +87,7 @@ Claude Code 会加载“登录功能”这个主题，结合项目中的实际�
 
 Skill 提供这些协作规则，MCP 工具执行实际文件操作。客户端对 Skill、Prompt 的显示方式不同；无需记住各自的斜杠命令。
 
-![交接流程](https://raw.githubusercontent.com/648428732qq-sketch/agent-handoff-mcp/main/docs/images/handoff-workflow.png)
+![交接流程](https://raw.githubusercontent.com/648428732qq-sketch/ai-agent-handoff-mcp/main/docs/images/handoff-workflow.png)
 
 ## 想放进 Obsidian Wiki？
 
@@ -115,7 +119,7 @@ npx -y agent-handoff-mcp@latest init --dir "C:/notes/wiki-vault/_handoff"
 npx -y agent-handoff-mcp@latest init --target codex
 ```
 
-将 `codex` 换成 `claude`、`cursor` 或 `antigravity` 即可。默认安装只处理探测到的客户端。已有相同配置会保留；不同的自定义配置或同名 Skill 会保留并提示冲突，处理方式见[高级教程](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/docs/advanced.md)。
+将 `codex` 换成 `claude`、`cursor` 或 `antigravity` 即可。默认安装只处理探测到的客户端。已有相同配置会保留；不同的自定义配置或同名 Skill 会保留并提示冲突，处理方式见[高级教程](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/docs/advanced.md)。
 
 先检查环境：
 
@@ -131,10 +135,18 @@ npx -y agent-handoff-mcp@latest report
 
 如果使用了自定义交接目录，请在命令后加相同的 `--dir "你的目录"`。核对报告内容后，通过文首“提交问题”发给维护者。
 
-详细配置、CLI 用法、诊断、数据边界、源码开发和贡献步骤均在[高级教程](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/docs/advanced.md)。安装只使用本地 Markdown，无需单独的数据库、服务器或 API Key；AI 客户端的账号和模型由客户端配置。
+详细配置、CLI 用法、诊断、数据边界、源码开发和贡献步骤均在[高级教程](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/docs/advanced.md)。安装只使用本地 Markdown，无需单独的数据库、服务器或 API Key；AI 客户端的账号和模型由客户端配置。
 
 ## 参与改进
 
 欢迎提交 Issue 或 Fork 后发起 PR。修改后运行 `npm test`，在 PR 中说明解决的问题和验证结果；维护者审核后合并。
 
-[MIT License](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/LICENSE)
+## 转载与使用授权
+
+- 转载、分享或分发时，须注明原创作者 **648428732qq-sketch**，附上[本仓库来源链接](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp)，并保留版权及授权文件。
+- 允许免费使用、修改和免费分享。**未经作者书面许可，禁止二次售卖**，包括改名、修改、重新打包或捆绑后对软件副本进行收费分发。
+- 企业内部使用，以及不对软件副本分发收费的独立咨询或支持服务可以进行。第三方依赖保留各自许可。
+
+新版本采用[署名与禁止转售许可](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/LICENSE)，属于源码公开的自定义授权。
+
+**历史许可说明：** `0.2.1` 及更早版本和已按 MIT 授权的原有代码，继续保留原授权权利；新条款不追溯撤销这些权利。原授权全文见 [docs/legal/mit-legacy-notice.txt](https://github.com/648428732qq-sketch/ai-agent-handoff-mcp/blob/main/docs/legal/mit-legacy-notice.txt)。
