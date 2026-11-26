@@ -32,6 +32,36 @@
 
 正文包含 Frontmatter，以及“当前目标”“已完成进展与关键文件”“关键决策与踩坑”“下一步行动”四节。主题名保留中文、字母、数字、`_` 和 `-`，其余字符转换为 `-`。
 
+## 使用前置条件
+
+| 条件 | 适用情况 |
+|---|---|
+| Node.js 与 npm | 本地运行必需。项目声明 Node.js ≥ 18.18.0，已通过 Windows、Linux 的 Node.js 20／22 CI，以及本机 Node.js 24.14 验证。安装 Node.js 时通常同时安装 npm。 |
+| 支持本地 stdio MCP 的 AI 客户端 | 通过 Agent 调用 MCP 工具时需要。客户端应能启动本机 Node.js 进程。 |
+| 可写的数据目录 | 默认使用 `~/.agent-handoff/`。也可通过 `HANDOFF_DIR` 或 CLI 的 `--dir` 指定。程序会创建所需目录，运行账号需有写权限。 |
+| Git | 从 GitHub 克隆源码时需要。 |
+| 依赖下载网络 | 首次执行 `npm ci` 或下载 npm 包时需要访问 npm 注册表；构建完成后，Markdown 存储在本机运行。 |
+| Obsidian／现有 Wiki | 可选。可以直接用默认目录，也可以将交接目录放到已有 Obsidian Vault 中。 |
+| 共享目录或文件同步 | 多个客户端接续同一任务时，需能读取同一组交接文件。跨设备使用时，由使用者提供目录同步或共享访问。 |
+
+交接存储本身无需数据库、Obsidian 插件或 API Key。工具只管理明确保存的交接摘要；已有 Wiki 的其他文章不会自动导入或被全文检索。AI 客户端的账号与模型接入由客户端自行配置。
+
+### 接入已有 Obsidian Wiki
+
+假设 Vault 位于 `C:/notes/wiki-vault`，在每个 MCP 客户端中设置相同的环境变量即可。
+
+```json
+{
+  "HANDOFF_DIR": "C:/notes/wiki-vault/_handoff"
+}
+```
+
+把这个对象放入后文 MCP 配置的 `env` 字段。程序在该位置维护 `index.md`、`current.md`、`threads/` 和 `_logs/`，Obsidian 可以直接查看其中的 Markdown。Vault 路径由本人选择，多个主题分别使用独立的槽位名。
+
+如果已有 `SHARED_AGENTS.md`、`AGENTS.md` 或交接规则，让其目录约定与 `HANDOFF_DIR` 保持一致。仓库根目录的 `SKILL.md` 提供一份可安装的交接协议；已经采用等价规则的客户端可继续使用原有协议。
+
+例如，终端中检查同一个 Wiki 交接目录时，运行 `node dist/src/cli.js doctor --dir C:/notes/wiki-vault/_handoff`。`init --dir` 只把目录写入客户端 MCP 配置，不会设置终端的环境变量；后续 CLI 命令仍需使用相同的 `--dir` 或 `HANDOFF_DIR`。
+
 ## 1. 安装和编译
 
 项目声明支持 **Node.js ≥ 18.18.0**，本次验证环境为 **Node.js 24.14.0**。准备 Node.js、npm 和 Git，然后运行：
