@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        感谢反馈！为了最快定位修复，请先在终端运行 `npx -y agent-handoff-mcp report`（或在 Agent 里让它调用 `handoff_diagnostics`），把生成的**脱敏诊断信息**粘贴到下方（不包含任何私人对话内容）。
+        请描述问题和复现步骤。源码安装后可运行 `node dist/src/cli.js report`，或在 Agent 中调用 `handoff_diagnostics` 获取诊断报告。诊断为可选项，安装或启动失败时可直接反馈。提交前请核对报告中的路径和日志摘要。
 
   - type: checkboxes
     id: agents
@@ -36,8 +36,8 @@ body:
   - type: textarea
     id: diagnostics
     attributes:
-      label: 脱敏诊断日志（运行 npx -y agent-handoff-mcp report 生成）
-      description: 日志已自动隐藏用户名路径，且永不记录对话正文。
+      label: 诊断报告或错误日志（可选）
+      description: 可以粘贴 doctor 或 report 输出。请先核对并删去不适合公开的路径、凭据或其他敏感信息。
       render: markdown
     validations:
-      required: true
+      required: false

@@ -2,6 +2,8 @@
 
 跨 AI Agent 的本地对话交接工具，提供 **MCP Server、CLI 和通用 Skill**。把当前对话的目标、进展、决策和下一步保存为独立 Markdown 槽位，在另一个 Agent 中按主题恢复。
 
+[提交问题](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=bug_report.yml) · [功能建议](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=feature_request.yml) · [Fork 本项目](https://github.com/648428732qq-sketch/agent-handoff-mcp/fork) · [提交 Pull Request](https://github.com/648428732qq-sketch/agent-handoff-mcp/compare)
+
 适用于支持本地 stdio MCP 的客户端。Antigravity、Codex、Claude Code、Cursor 等可按下面的方式配置；Trae、WorkBuddy 等可在各自 MCP 设置中填写相同的启动参数。网页版 AI 可以使用导出的交接文本。
 
 ![交接流程](docs/images/handoff-workflow.png)
@@ -42,7 +44,7 @@ npm run build
 node dist/src/cli.js --help
 ```
 
-私有仓库的使用者需要先以具有仓库访问权的 GitHub 账号登录 Git 或 GitHub CLI。
+本仓库公开，可直接克隆源码。提交 Issue、Fork 或发起 Pull Request 时，请登录自己的 GitHub 账号。
 
 编译入口为 `dist/src/cli.js`。下面假设项目位于 `C:/work/agent-handoff-mcp`，交接目录位于 `C:/AgentData/handoff`，请替换为本机实际的绝对路径。macOS、Linux 使用对应路径即可。
 
@@ -223,6 +225,42 @@ Prompt 是否显示为斜杠命令，以及显示的名称，取决于客户端�
 - 保存触发和恢复选择由工具说明、Prompt、Skill 与客户端协作执行，存储层按调用参数处理读写。
 - 当前对单文件采用临时文件加重命名写入。多进程同时更新索引和最近指针时，尚无跨进程锁或完整事务保证。
 - 关闭槽位后，`current.md` 可能保留旧指针。判断可恢复内容时，以 `handoff_list` 或 CLI `list` 的活跃结果为准。
+
+## 反馈问题与参与贡献
+
+### 提交问题或建议
+
+点击文首的“提交问题”或“功能建议”，即可打开对应的 GitHub 表单。提交前可以先查看[已有 Issues](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues)，确认是否已有相关讨论。
+
+报告问题时，请写明使用的客户端、系统和 Node.js 版本、复现步骤、预期结果及实际错误。能够运行诊断命令时，可以附上第 6 节的报告；安装或启动失败时，也可以直接描述问题。功能建议可以说明使用场景、期望行为和涉及的客户端。
+
+### Fork 后提交改进
+
+仓库已开放 Issues 和 Fork。任何登录的 GitHub 用户都可以将项目 Fork 到自己的账号，在个人副本中修改，再向本仓库提交 Pull Request，由维护者审核合并。
+
+1. 点击文首的“Fork 本项目”，创建自己的仓库副本。
+2. 将下面的 `YOUR_USERNAME` 替换为自己的 GitHub 用户名，在个人副本中新建分支。
+
+```bash
+git clone https://github.com/YOUR_USERNAME/agent-handoff-mcp.git
+cd agent-handoff-mcp
+git switch -c fix/describe-change
+npm ci
+```
+
+3. 完成改动后运行测试，提交本次相关修改并推送到个人副本。
+
+```bash
+npm test
+git add .
+git commit -m "fix: describe your change"
+git push -u origin fix/describe-change
+```
+
+4. 点击文首的“提交 Pull Request”，选择“compare across forks”。目标仓库选择 `648428732qq-sketch/agent-handoff-mcp`、目标分支选择 `main`，来源选择个人 Fork 的 `fix/describe-change` 分支。
+5. 在 PR 中说明解决的问题、具体变化和验证结果。关联已有 Issue 时，在正文写 `关联 #编号`。
+
+维护者会在 PR 中反馈审查意见，贡献者可继续向同一分支推送更新。
 
 ## 开发和验证
 
