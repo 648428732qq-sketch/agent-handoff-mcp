@@ -6,7 +6,7 @@
 
 适用于支持本地 stdio MCP 的客户端。Antigravity、Codex、Claude Code、Cursor 等可按下面的方式配置；Trae、WorkBuddy 等可在各自 MCP 设置中填写相同的启动参数。网页版 AI 可以使用导出的交接文本。
 
-![交接流程](docs/images/handoff-workflow.png)
+![交接流程](https://raw.githubusercontent.com/648428732qq-sketch/agent-handoff-mcp/main/docs/images/handoff-workflow.png)
 
 *流程图展示保存当前现场、按主题索引、在另一 Agent 恢复或导出的过程。*
 
@@ -62,7 +62,28 @@
 
 例如，终端中检查同一个 Wiki 交接目录时，运行 `node dist/src/cli.js doctor --dir C:/notes/wiki-vault/_handoff`。`init --dir` 只把目录写入客户端 MCP 配置，不会设置终端的环境变量；后续 CLI 命令仍需使用相同的 `--dir` 或 `HANDOFF_DIR`。
 
-## 1. 安装和编译
+## 1. 安装和运行
+
+### 从 npm 使用
+
+准备好 Node.js 和 npm 后，可以直接运行，无需克隆源码、安装 Git、编译 TypeScript 或全局安装：
+
+```bash
+npx -y agent-handoff-mcp@0.1.0 --help
+npx -y agent-handoff-mcp@0.1.0 doctor --dir C:/AgentData/handoff
+```
+
+`--help` 显示使用方法，`doctor` 检查指定数据目录的可写性。macOS、Linux 请替换目录路径。首次使用时 npx 会下载 npm 包及其运行依赖。
+
+以下命令可为 Codex 写入 MCP 配置；其他目标见后文 `init` 说明。它会修改本机对应客户端的配置文件：
+
+```bash
+npx -y agent-handoff-mcp@0.1.0 init --target codex --dir C:/AgentData/handoff
+```
+
+也可以按下一节手动填写配置。npm 包主页：[agent-handoff-mcp](https://www.npmjs.com/package/agent-handoff-mcp)。
+
+### 从 GitHub 源码构建
 
 项目声明支持 **Node.js ≥ 18.18.0**，本次验证环境为 **Node.js 24.14.0**。准备 Node.js、npm 和 Git，然后运行：
 
@@ -80,7 +101,7 @@ node dist/src/cli.js --help
 
 ## 2. 配置 MCP 客户端
 
-将服务注册为 `agent-handoff`。启动命令使用 `node`，参数指定编译后的入口。如果客户端找不到 Node.js，可以把 `command` 改成 `node` 可执行文件的绝对路径。
+将服务注册为 `agent-handoff`。下面通过 `npx` 运行 npm 包；如果客户端找不到 npx，请在客户端填写 npx 可执行文件的绝对路径。
 
 ### JSON 配置
 
@@ -90,8 +111,8 @@ node dist/src/cli.js --help
 {
   "mcpServers": {
     "agent-handoff": {
-      "command": "node",
-      "args": ["C:/work/agent-handoff-mcp/dist/src/cli.js"],
+      "command": "npx",
+      "args": ["-y", "agent-handoff-mcp@0.1.0"],
       "env": {
         "HANDOFF_DIR": "C:/AgentData/handoff"
       }
@@ -115,8 +136,8 @@ node dist/src/cli.js --help
 
 ```toml
 [mcp_servers.agent-handoff]
-command = "node"
-args = ["C:/work/agent-handoff-mcp/dist/src/cli.js"]
+command = "npx"
+args = ["-y", "agent-handoff-mcp@0.1.0"]
 
 [mcp_servers.agent-handoff.env]
 HANDOFF_DIR = "C:/AgentData/handoff"
@@ -124,15 +145,17 @@ HANDOFF_DIR = "C:/AgentData/handoff"
 
 保存后重新加载 MCP 配置或重启客户端，确认能发现下面列出的六个工具。stdio 服务由客户端保持运行并接收工具请求。
 
+使用源码部署时，把上述 `command` 改为 `node`，`args` 改为 `["C:/work/agent-handoff-mcp/dist/src/cli.js"]`，保留相同的 `env` 配置。请使用本机实际的绝对路径；如需离线运行，先完成构建和依赖安装。
+
 ### 关于 init 辅助器
 
 ```bash
-node dist/src/cli.js init --target codex --dir C:/AgentData/handoff
+npx -y agent-handoff-mcp@0.1.0 init --target codex --dir C:/AgentData/handoff
 ```
 
 支持目标 `antigravity`、`codex`、`claude`、`cursor`、`trae`、`workbuddy` 和 `all`，默认 `all`。前四项写入配置，Trae 和 WorkBuddy 输出供手动填写的 JSON。修改既有配置时生成 `.bak` 备份，Codex 已有同名服务时会跳过添加。
 
-**当前辅助器生成的启动命令固定为 `npx -y agent-handoff-mcp`。** 它依赖 npm 上存在可用的同名包版本，GitHub 仓库上传本身不代表已完成 npm 发布。从本仓库源码安装时，采用上面的本地编译文件路径即可启动。
+**辅助器生成的启动命令固定为 `npx -y agent-handoff-mcp`，使用 npm 的 latest 版本。** 如需固定本次版本，可手动将生成的参数改为 `["-y", "agent-handoff-mcp@0.1.0"]`。源码部署可使用上面的本地编译文件路径。`init --dir` 不会给终端设置环境变量，后续 CLI 命令仍需使用相同的目录参数。
 
 ## 3. 安装 Skill
 
