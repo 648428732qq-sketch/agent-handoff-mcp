@@ -15,9 +15,13 @@ Cross-agent isolated conversation handoff MCP server & CLI.
 Usage:
   agent-handoff-mcp                      Start local stdio MCP server (default)
   agent-handoff-mcp serve [--dir PATH]   Start local stdio MCP server
-  agent-handoff-mcp init [--target NAME] [--dir PATH]
-                                         Register MCP config for Antigravity, Codex,
-                                         Claude Code, Cursor, Trae, and WorkBuddy
+  agent-handoff-mcp init [--target NAME] [--dir PATH] [--force]
+                                         Auto-detect clients, configure MCP + Skill,
+                                         and verify the handoff data directory
+                                         Targets: auto (default), codex, antigravity,
+                                         claude, cursor, trae, workbuddy, all
+                                         --force backs up conflicting owned files
+                                         Trae / WorkBuddy need manual configuration
   agent-handoff-mcp list [--project P]   List active isolated handoff slots
   agent-handoff-mcp load <topic>         Print a handoff slot's Markdown content
   agent-handoff-mcp export <topic>       Print a copy-paste prompt for Web AI tools
@@ -62,9 +66,20 @@ async function main(): Promise<void> {
   }
 
   if (cmd === "init") {
+    for (let index = 1; index < args.length; index++) {
+      const flag = args[index];
+      if (flag === "--force") continue;
+      if (flag === "--target" || flag === "--dir") {
+        const value = args[++index];
+        if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value.`);
+        continue;
+      }
+      throw new Error(`Unknown init option: ${flag}`);
+    }
     await runInit({
       target: getFlag(args, "--target"),
       dir: getFlag(args, "--dir"),
+      force: args.includes("--force"),
     });
     return;
   }

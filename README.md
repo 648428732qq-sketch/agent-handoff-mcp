@@ -1,333 +1,105 @@
 # agent-handoff-mcp
 
-跨 AI Agent 的本地对话交接工具，提供 **MCP Server、CLI 和通用 Skill**。把当前对话的目标、进展、决策和下一步保存为独立 Markdown 槽位，在另一个 Agent 中按主题恢复。
+把一个 AI 对话的进展交给另一个 Agent：说“交接 主题”，保存独立 Markdown；换一个 Agent 说“继续 主题”，接着做。
 
-[提交问题](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=bug_report.yml) · [功能建议](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=feature_request.yml) · [Fork 本项目](https://github.com/648428732qq-sketch/agent-handoff-mcp/fork) · [提交 Pull Request](https://github.com/648428732qq-sketch/agent-handoff-mcp/compare)
+[提交问题](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=bug_report.yml) · [功能建议](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=feature_request.yml) · [Fork](https://github.com/648428732qq-sketch/agent-handoff-mcp/fork) · [提交 PR](https://github.com/648428732qq-sketch/agent-handoff-mcp/compare) · [npm](https://www.npmjs.com/package/agent-handoff-mcp)
 
-适用于支持本地 stdio MCP 的客户端。Antigravity、Codex、Claude Code、Cursor 等可按下面的方式配置；Trae、WorkBuddy 等可在各自 MCP 设置中填写相同的启动参数。网页版 AI 可以使用导出的交接文本。
+## 开始使用
 
-![交接流程](https://raw.githubusercontent.com/648428732qq-sketch/agent-handoff-mcp/main/docs/images/handoff-workflow.png)
+前置条件：**Node.js 20 或以上（含 npm）**，以及已安装、支持本地 stdio MCP 的 AI 客户端。首次安装需联网下载。
 
-*流程图展示保存当前现场、按主题索引、在另一 Agent 恢复或导出的过程。*
-
-## 工作方式
-
-- **MCP Server** 提供保存、列出、加载、关闭、导出和诊断工具，由客户端启动本地 Node.js 进程，通过 stdio 通信。
-- **CLI** 支持查看和导出已有槽位、关闭归档，以及诊断接入问题。
-- **Skill** 指导 Agent 在用户明确要求交接时保存，按主题恢复，并在多个候选之间请求选择。
-- **Markdown 目录** 保存实际交接内容。多个客户端指向同一个目录，就能使用同一组槽位。
-
-默认目录为 `~/.agent-handoff/`，也可以指向 Obsidian Vault 的 `_handoff/`。
-
-```text
-.agent-handoff/
-├── index.md                 活跃槽位目录
-├── current.md               最近一次保存的指针
-├── threads/
-│   ├── 语音唤醒延迟.md       一个对话的交接正文
-│   └── rag-research.md       另一个对话的交接正文
-└── _logs/
-    └── agent-handoff.jsonl   诊断日志
-```
-
-正文包含 Frontmatter，以及“当前目标”“已完成进展与关键文件”“关键决策与踩坑”“下一步行动”四节。主题名保留中文、字母、数字、`_` 和 `-`，其余字符转换为 `-`。
-
-## 使用前置条件
-
-| 条件 | 适用情况 |
-|---|---|
-| Node.js 与 npm | 本地运行必需。项目声明 Node.js ≥ 18.18.0，已通过 Windows、Linux 的 Node.js 20／22 CI，以及本机 Node.js 24.14 验证。安装 Node.js 时通常同时安装 npm。 |
-| 支持本地 stdio MCP 的 AI 客户端 | 通过 Agent 调用 MCP 工具时需要。客户端应能启动本机 Node.js 进程。 |
-| 可写的数据目录 | 默认使用 `~/.agent-handoff/`。也可通过 `HANDOFF_DIR` 或 CLI 的 `--dir` 指定。程序会创建所需目录，运行账号需有写权限。 |
-| Git | 从 GitHub 克隆源码时需要。 |
-| 依赖下载网络 | 首次执行 `npm ci` 或下载 npm 包时需要访问 npm 注册表；构建完成后，Markdown 存储在本机运行。 |
-| Obsidian／现有 Wiki | 可选。可以直接用默认目录，也可以将交接目录放到已有 Obsidian Vault 中。 |
-| 共享目录或文件同步 | 多个客户端接续同一任务时，需能读取同一组交接文件。跨设备使用时，由使用者提供目录同步或共享访问。 |
-
-交接存储本身无需数据库、Obsidian 插件或 API Key。工具只管理明确保存的交接摘要；已有 Wiki 的其他文章不会自动导入或被全文检索。AI 客户端的账号与模型接入由客户端自行配置。
-
-### 接入已有 Obsidian Wiki
-
-假设 Vault 位于 `C:/notes/wiki-vault`，在每个 MCP 客户端中设置相同的环境变量即可。
-
-```json
-{
-  "HANDOFF_DIR": "C:/notes/wiki-vault/_handoff"
-}
-```
-
-把这个对象放入后文 MCP 配置的 `env` 字段。程序在该位置维护 `index.md`、`current.md`、`threads/` 和 `_logs/`，Obsidian 可以直接查看其中的 Markdown。Vault 路径由本人选择，多个主题分别使用独立的槽位名。
-
-如果已有 `SHARED_AGENTS.md`、`AGENTS.md` 或交接规则，让其目录约定与 `HANDOFF_DIR` 保持一致。仓库根目录的 `SKILL.md` 提供一份可安装的交接协议；已经采用等价规则的客户端可继续使用原有协议。
-
-例如，终端中检查同一个 Wiki 交接目录时，运行 `node dist/src/cli.js doctor --dir C:/notes/wiki-vault/_handoff`。`init --dir` 只把目录写入客户端 MCP 配置，不会设置终端的环境变量；后续 CLI 命令仍需使用相同的 `--dir` 或 `HANDOFF_DIR`。
-
-## 1. 安装和运行
-
-### 从 npm 使用
-
-准备好 Node.js 和 npm 后，可以直接运行，无需克隆源码、安装 Git、编译 TypeScript 或全局安装：
+在终端执行：
 
 ```bash
-npx -y agent-handoff-mcp@0.1.0 --help
-npx -y agent-handoff-mcp@0.1.0 doctor --dir C:/AgentData/handoff
+npx -y agent-handoff-mcp@latest init
 ```
 
-`--help` 显示使用方法，`doctor` 检查指定数据目录的可写性。macOS、Linux 请替换目录路径。首次使用时 npx 会下载 npm 包及其运行依赖。
+程序探测本机已有的 **Codex、Claude Code、Cursor、Antigravity** 配置目录，为找到的客户端配置 MCP、安装内置 Skill，并检查交接目录是否可写。
 
-以下命令可为 Codex 写入 MCP 配置；其他目标见后文 `init` 说明。它会修改本机对应客户端的配置文件：
+看到成功提示后，**重启对应客户端或重新加载 MCP，再新建对话**。客户端可能要求启用服务或允许工具调用，按它的提示完成即可。
+
+默认数据保存在 `~/.agent-handoff/`。不需要先选路径、安装 Git、克隆仓库、编译源码或手动复制 Skill；**Obsidian/Wiki 也不是必需品**。
+
+### 没有探测到客户端
+
+先安装并启动一次你的 AI 客户端，或明确指定目标，例如：
 
 ```bash
-npx -y agent-handoff-mcp@0.1.0 init --target codex --dir C:/AgentData/handoff
+npx -y agent-handoff-mcp@latest init --target codex
 ```
 
-也可以按下一节手动填写配置。npm 包主页：[agent-handoff-mcp](https://www.npmjs.com/package/agent-handoff-mcp)。
+将 `codex` 换成 `claude`、`cursor` 或 `antigravity` 即可。默认安装只处理探测到的客户端；不会因为未找到配置就给全部客户端创建目录。
 
-### 从 GitHub 源码构建
+已有相同配置会保留；遇到不同的自定义配置或同名 Skill，程序会保留原文件并说明冲突。[高级教程](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/docs/advanced.md)介绍目录、备份及 `--force` 的处理方式。
 
-项目声明支持 **Node.js ≥ 18.18.0**，本次验证环境为 **Node.js 24.14.0**。准备 Node.js、npm 和 Git，然后运行：
-
-```bash
-git clone https://github.com/648428732qq-sketch/agent-handoff-mcp.git
-cd agent-handoff-mcp
-npm ci
-npm run build
-node dist/src/cli.js --help
-```
-
-本仓库公开，可直接克隆源码。提交 Issue、Fork 或发起 Pull Request 时，请登录自己的 GitHub 账号。
-
-编译入口为 `dist/src/cli.js`。下面假设项目位于 `C:/work/agent-handoff-mcp`，交接目录位于 `C:/AgentData/handoff`，请替换为本机实际的绝对路径。macOS、Linux 使用对应路径即可。
-
-## 2. 配置 MCP 客户端
-
-将服务注册为 `agent-handoff`。下面通过 `npx` 运行 npm 包；如果客户端找不到 npx，请在客户端填写 npx 可执行文件的绝对路径。
-
-### JSON 配置
-
-将下面的服务条目合并到客户端现有的 `mcpServers` 中：
-
-```json
-{
-  "mcpServers": {
-    "agent-handoff": {
-      "command": "npx",
-      "args": ["-y", "agent-handoff-mcp@0.1.0"],
-      "env": {
-        "HANDOFF_DIR": "C:/AgentData/handoff"
-      }
-    }
-  }
-}
-```
-
-源码中的配置辅助器使用以下文件位置。客户端版本或组织配置可能使用其他作用域，以当前客户端的配置入口为准。
-
-| 客户端 | 配置位置 |
-|---|---|
-| Antigravity | `~/.gemini/antigravity/mcp_config.json` |
-| Claude Code | `~/.claude.json` |
-| Cursor | `~/.cursor/mcp.json` |
-| Trae、WorkBuddy 等 | 在客户端 MCP 设置中填写命令、参数和环境变量 |
-
-### Codex TOML 配置
-
-在个人 `~/.codex/config.toml` 中添加：
-
-```toml
-[mcp_servers.agent-handoff]
-command = "npx"
-args = ["-y", "agent-handoff-mcp@0.1.0"]
-
-[mcp_servers.agent-handoff.env]
-HANDOFF_DIR = "C:/AgentData/handoff"
-```
-
-保存后重新加载 MCP 配置或重启客户端，确认能发现下面列出的六个工具。stdio 服务由客户端保持运行并接收工具请求。
-
-使用源码部署时，把上述 `command` 改为 `node`，`args` 改为 `["C:/work/agent-handoff-mcp/dist/src/cli.js"]`，保留相同的 `env` 配置。请使用本机实际的绝对路径；如需离线运行，先完成构建和依赖安装。
-
-### 关于 init 辅助器
-
-```bash
-npx -y agent-handoff-mcp@0.1.0 init --target codex --dir C:/AgentData/handoff
-```
-
-支持目标 `antigravity`、`codex`、`claude`、`cursor`、`trae`、`workbuddy` 和 `all`，默认 `all`。前四项写入配置，Trae 和 WorkBuddy 输出供手动填写的 JSON。修改既有配置时生成 `.bak` 备份，Codex 已有同名服务时会跳过添加。
-
-**辅助器生成的启动命令固定为 `npx -y agent-handoff-mcp`，使用 npm 的 latest 版本。** 如需固定本次版本，可手动将生成的参数改为 `["-y", "agent-handoff-mcp@0.1.0"]`。源码部署可使用上面的本地编译文件路径。`init --dir` 不会给终端设置环境变量，后续 CLI 命令仍需使用相同的目录参数。
-
-## 3. 安装 Skill
-
-MCP 工具负责读写文件，仓库根目录的 `SKILL.md` 提供交接规则。支持 Agent Skills 的客户端可按各自的安装方式使用它。
-
-Codex 用户可以从仓库根目录运行：
-
-```powershell
-$skillDir = Join-Path $env:USERPROFILE ".agents/skills/agent-handoff"
-New-Item -ItemType Directory -Path $skillDir -Force
-Copy-Item -LiteralPath ".\SKILL.md" -Destination (Join-Path $skillDir "SKILL.md")
-```
-
-安装后重新打开聊天，调用 `$agent-handoff`，或要求 Agent 按该 Skill 处理交接。Skill 使用已连接的 MCP 服务执行实际操作。
-
-## 4. 完成一次交接
-
-### 保存当前对话
+## 完成一次交接
 
 在 Agent A 中输入：
 
-> 交接 语音唤醒延迟。请保存当前目标、已完成进展、关键文件、关键决策和下一步行动。
+> 交接 登录功能。请保存当前目标、已完成内容、关键决策和下一步。
 
-Agent 总结后调用 `handoff_save`，返回槽位名和文件路径。Skill 建议正文精简到 40 行以内，便于接收方阅读。
+然后在同一台电脑的 Agent B 中输入：
 
-底层参数示例：
+> 继续 登录功能。
 
-```json
-{
-  "topic": "语音唤醒延迟",
-  "goal": "- 降低语音唤醒响应延迟",
-  "progress": "- 已定位音频缓冲参数，记录在项目测试报告中",
-  "decisions": "- 保留流式输入，使用固定基线复测",
-  "nextSteps": "- 对比调整前后的端到端延迟",
-  "summary": "已完成缓冲定位，下一步复测延迟",
-  "sourceAgent": "Codex",
-  "project": "voice-demo",
-  "workspace": "C:/work/voice-demo"
-}
-```
+两个客户端需使用同一交接目录；默认安装会使用相同的默认目录。Agent 会读取该主题的摘要，继续下一步。
 
-### 在另一 Agent 精准恢复
+| 想做什么 | 对 Agent 说 |
+|---|---|
+| 保存或更新当前主题 | 交接 登录功能 |
+| 查看已有主题 | 看交接 |
+| 恢复指定主题 | 继续 登录功能 |
+| 结束一个主题 | 结束交接 登录功能 |
+| 给网页版 AI 使用 | 导出 登录功能 |
 
-让 Agent B 使用相同的 `HANDOFF_DIR`，然后输入：
+不同对话请使用不同主题名。同名保存会更新原主题；有多个候选而只说“继续”时，先选择主题。保存由明确的交接指令触发。
 
-> 继续 语音唤醒延迟。
+Skill 提供这些协作规则，MCP 工具执行实际文件操作。客户端对 Skill、Prompt 的显示方式不同；无需记住各自的斜杠命令。
 
-Agent 调用 `handoff_load`，读取指定槽位并继续下一步。支持唯一的部分名称匹配，例如只有一个相关主题时，可以使用“继续 唤醒”。
+![交接流程](https://raw.githubusercontent.com/648428732qq-sketch/agent-handoff-mcp/main/docs/images/handoff-workflow.png)
 
-### 多个主题时先选择
+## 想放进 Obsidian Wiki？
 
-输入“看交接”，Agent 会用 `handoff_list` 展示活跃槽位。只说“继续”且存在多个候选时，Skill 要求先列编号供用户选择。新话题按当前任务处理，恢复时明确主题可以减少上下文混用。
-
-### 结束并归档
-
-输入：
-
-> 结束交接 语音唤醒延迟，并归档到 C:/AgentData/handoff-archive。
-
-Agent 调用 `handoff_close`，先保存归档副本，再删除活跃槽位并更新索引。归档可选，未传归档目录时直接关闭槽位。
-
-## 5. CLI 查看、导出和关闭
-
-以下命令从仓库根目录执行，并使用同一数据目录：
-
-```powershell
-node dist/src/cli.js list --dir "C:/AgentData/handoff"
-node dist/src/cli.js list --project "voice-demo" --dir "C:/AgentData/handoff"
-node dist/src/cli.js load "语音唤醒延迟" --dir "C:/AgentData/handoff"
-node dist/src/cli.js export "语音唤醒延迟" --dir "C:/AgentData/handoff"
-node dist/src/cli.js close "语音唤醒延迟" --archive "C:/AgentData/handoff-archive" --dir "C:/AgentData/handoff"
-```
-
-`export` 输出包含交接正文的提示词，可以粘贴到 ChatGPT、Claude、Gemini 等网页版 AI。PowerShell 可以直接复制到剪贴板：
-
-```powershell
-node dist/src/cli.js export "语音唤醒延迟" --dir "C:/AgentData/handoff" | Set-Clipboard
-```
-
-CLI 负责处理已有槽位，保存当前聊天通过 MCP `handoff_save` 完成。
-
-## 6. 诊断和反馈问题
-
-遇到客户端接入、目录权限或交接操作问题时，在仓库根目录运行：
-
-```powershell
-node dist/src/cli.js doctor --dir "C:/AgentData/handoff"
-node dist/src/cli.js report --dir "C:/AgentData/handoff" --lines 40
-```
-
-- `doctor` 显示 Node.js、系统版本、交接目录可写状态、活跃槽位数量和日志位置。
-- 日志位于 `<HANDOFF_DIR>/_logs/agent-handoff.jsonl`，例如 `C:/AgentData/handoff/_logs/agent-handoff.jsonl`。
-- `report` 输出可复制的 Markdown 环境报告、近期日志摘要和 GitHub Bug Issue 链接。`--lines` 控制收录的日志行数。
-- 已连接 MCP 时，可以请 Agent 调用 `handoff_diagnostics` 获取诊断信息。
-
-在服务环境变量中增加 `HANDOFF_DEBUG=1`，可同时把 JSONL 诊断输出到 stderr，供客户端排查。JSON 配置写成 `"HANDOFF_DEBUG": "1"`，Codex 的环境变量表中写成 `HANDOFF_DEBUG = "1"`。
-
-报告会对部分路径和日志信息做摘要处理。提交 Issue 或发给其他人前，请核对实际输出中的路径、环境信息和日志摘要，按自己的数据共享要求删去敏感内容。
-
-## MCP 接口
-
-| 类型 | 名称 | 用途 |
-|---|---|---|
-| Tool | `handoff_list` | 列出活跃槽位，可按项目过滤 |
-| Tool | `handoff_load` | 加载指定主题或唯一匹配的主题 |
-| Tool | `handoff_save` | 保存或更新一个主题槽位 |
-| Tool | `handoff_close` | 关闭槽位，可先归档 |
-| Tool | `handoff_export` | 生成供网页版 AI 使用的交接文本 |
-| Tool | `handoff_diagnostics` | 获取环境、目录状态和近期日志摘要 |
-| Prompt | `save`、`resume`、`list` | 引导保存、恢复和列出操作 |
-| Resource | `handoff://index` | 提供轻量槽位目录 |
-
-Prompt 是否显示为斜杠命令，以及显示的名称，取决于客户端对 MCP Prompts 的支持。
-
-## 数据位置和使用边界
-
-- 服务把 Markdown 写入本机指定目录，运行无需独立远程服务器。加载正文后，内容会进入当前 AI 客户端的上下文，按该客户端的数据设置处理。
-- 不同对话使用不同主题。再次保存同名主题会更新对应文件，需要保留两个现场时请使用不同主题。
-- 多个客户端访问同一目录即可共享槽位。跨设备使用时，可以自行复制或同步目录，并协调写入时机。
-- 保存触发和恢复选择由工具说明、Prompt、Skill 与客户端协作执行，存储层按调用参数处理读写。
-- 当前对单文件采用临时文件加重命名写入。多进程同时更新索引和最近指针时，尚无跨进程锁或完整事务保证。
-- 关闭槽位后，`current.md` 可能保留旧指针。判断可恢复内容时，以 `handoff_list` 或 CLI `list` 的活跃结果为准。
-
-## 反馈问题与参与贡献
-
-### 提交问题或建议
-
-点击文首的“提交问题”或“功能建议”，即可打开对应的 GitHub 表单。提交前可以先查看[已有 Issues](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues)，确认是否已有相关讨论。
-
-报告问题时，请写明使用的客户端、系统和 Node.js 版本、复现步骤、预期结果及实际错误。能够运行诊断命令时，可以附上第 6 节的报告；安装或启动失败时，也可以直接描述问题。功能建议可以说明使用场景、期望行为和涉及的客户端。
-
-### Fork 后提交改进
-
-仓库已开放 Issues 和 Fork。任何登录的 GitHub 用户都可以将项目 Fork 到自己的账号，在个人副本中修改，再向本仓库提交 Pull Request，由维护者审核合并。
-
-1. 点击文首的“Fork 本项目”，创建自己的仓库副本。
-2. 将下面的 `YOUR_USERNAME` 替换为自己的 GitHub 用户名，在个人副本中新建分支。
+可选。在安装时指定已有 Vault 中的交接子目录：
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/agent-handoff-mcp.git
-cd agent-handoff-mcp
-git switch -c fix/describe-change
-npm ci
+npx -y agent-handoff-mcp@latest init --dir "C:/notes/wiki-vault/_handoff"
 ```
 
-3. 完成改动后运行测试，提交本次相关修改并推送到个人副本。
+把示例路径换成自己的目录；macOS、Linux 使用相应路径。若已经配置过另一个目录，先按冲突提示处理，避免误切换数据位置。
+
+已有的 `AGENTS.md` 或 `SHARED_AGENTS.md` 也应使用相同目录。工具管理交接摘要，**不会自动导入、搜索整个 Wiki，也不会自动同步不同设备**。跨设备使用时，需要自行同步交接文件。
+
+## 支持范围
+
+| 客户端 | 安装方式 |
+|---|---|
+| Codex、Claude Code、Cursor、Antigravity | `init` 自动探测并安装 MCP 与 Skill |
+| Trae、WorkBuddy | `init --target trae` / `workbuddy` 输出 JSON，需在客户端手动接入 |
+| ChatGPT、Claude、Gemini 等网页版 AI | 在本地 Agent 中导出主题，再粘贴到网页对话 |
+
+自动安装针对本机个人配置；远程、云端或组织管理的环境可能有独立设置。安装结果以终端输出和客户端实际发现的工具为准。
+
+## 遇到问题
+
+先检查环境：
 
 ```bash
-npm test
-git add .
-git commit -m "fix: describe your change"
-git push -u origin fix/describe-change
+npx -y agent-handoff-mcp@latest doctor
 ```
 
-4. 点击文首的“提交 Pull Request”，选择“compare across forks”。目标仓库选择 `648428732qq-sketch/agent-handoff-mcp`、目标分支选择 `main`，来源选择个人 Fork 的 `fix/describe-change` 分支。
-5. 在 PR 中说明解决的问题、具体变化和验证结果。关联已有 Issue 时，在正文写 `关联 #编号`。
-
-维护者会在 PR 中反馈审查意见，贡献者可继续向同一分支推送更新。
-
-## 开发和验证
+需要反馈时生成报告：
 
 ```bash
-npm test
-npm run build
+npx -y agent-handoff-mcp@latest report
 ```
 
-`npm test` 会先编译 TypeScript，再运行现有三个测试。存储场景覆盖主题名处理、两个槽位的隔离、项目过滤、唯一匹配加载、文本导出，以及关闭和归档。测试中的两个槽位依次保存，多进程并发和各客户端界面接入需要另行验证。
+如果使用了自定义交接目录，请在命令后加相同的 `--dir "你的目录"`。核对报告内容后，通过文首“提交问题”发给维护者。
 
-本次上传前还使用 MCP SDK Client 完成了真实 stdio 冒烟，验证六个工具、三个 Prompt、一个 Resource 的发现，以及保存、列表、加载、导出、关闭、归档和诊断。CLI 的列表、加载、导出、`doctor` 和 `report` 也已验证。冒烟使用独立临时目录及合成示例。
+详细配置、CLI 用法、诊断、数据边界、源码开发和贡献步骤均在[高级教程](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/docs/advanced.md)。安装只使用本地 Markdown，无需单独的数据库、服务器或 API Key；AI 客户端的账号和模型由客户端配置。
 
-项目使用 TypeScript。MCP 接口位于 `src/server.ts`，CLI 位于 `src/cli.ts`，Markdown 存储位于 `src/store.ts`，存储抽象 `HandoffStore` 位于 `src/types.ts`。
+## 参与改进
 
-## License
+欢迎提交 Issue 或 Fork 后发起 PR。修改后运行 `npm test`，在 PR 中说明解决的问题和验证结果；维护者审核后合并。
 
-[MIT](LICENSE)
+[MIT License](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/LICENSE)

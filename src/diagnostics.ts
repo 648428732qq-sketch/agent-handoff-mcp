@@ -1,11 +1,14 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { DiagnosticsLogger, sanitizeText } from "./logger.js";
 import { LocalMarkdownStore } from "./store.js";
 
 export const REPO_SLUG = "648428732qq-sketch/agent-handoff-mcp";
-export const PACKAGE_VERSION = "0.1.0";
+export const PACKAGE_VERSION: string = createRequire(import.meta.url)(
+  "../../package.json"
+).version;
 
 export interface DiagnosticSummary {
   version: string;

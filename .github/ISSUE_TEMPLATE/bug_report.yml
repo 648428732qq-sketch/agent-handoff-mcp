@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        请描述问题和复现步骤。源码安装后可运行 `node dist/src/cli.js report`，或在 Agent 中调用 `handoff_diagnostics` 获取诊断报告。诊断为可选项，安装或启动失败时可直接反馈。提交前请核对报告中的路径和日志摘要。
+        请描述问题和复现步骤。可直接运行 `npx -y agent-handoff-mcp report`，或在 Agent 中调用 `handoff_diagnostics` 获取诊断报告；使用自定义交接目录时，命令需加上相同的 `--dir`。诊断为可选项，安装或启动失败时可直接反馈。提交前请核对报告中的路径和日志摘要。
 
   - type: checkboxes
     id: agents
