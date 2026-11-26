@@ -1,6 +1,6 @@
 {
   "name": "agent-handoff-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Cross-agent isolated conversation handoff MCP server, CLI, and Skill for Antigravity, Codex, Trae, WorkBuddy, Claude Code, Cursor, and Web AI.",
   "keywords": [
     "mcp",

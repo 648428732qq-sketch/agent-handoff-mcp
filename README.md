@@ -4,7 +4,7 @@
 
 [提交问题](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=bug_report.yml) · [功能建议](https://github.com/648428732qq-sketch/agent-handoff-mcp/issues/new?template=feature_request.yml) · [Fork](https://github.com/648428732qq-sketch/agent-handoff-mcp/fork) · [提交 PR](https://github.com/648428732qq-sketch/agent-handoff-mcp/compare) · [npm](https://www.npmjs.com/package/agent-handoff-mcp)
 
-## 开始使用
+## 安装
 
 前置条件：**Node.js 20 或以上（含 npm）**，以及已安装、支持本地 stdio MCP 的 AI 客户端。首次安装需联网下载。
 
@@ -20,29 +20,56 @@ npx -y agent-handoff-mcp@latest init
 
 默认数据保存在 `~/.agent-handoff/`。不需要先选路径、安装 Git、克隆仓库、编译源码或手动复制 Skill；**Obsidian/Wiki 也不是必需品**。
 
-### 没有探测到客户端
+## 使用教程：用一个案例完成交接
 
-先安装并启动一次你的 AI 客户端，或明确指定目标，例如：
+**案例：用 Codex 开发网站登录功能，再换 Claude Code 继续。** 假设你已完成邮箱格式校验，接下来要补登录失败提示。以下是演示场景，登录功能由你的项目实现。
 
-```bash
-npx -y agent-handoff-mcp@latest init --target codex
-```
+先让两个客户端都完成上面的安装，并在同一台电脑上打开同一个项目目录。两个客户端使用相同的交接目录即可；默认安装已统一使用 `~/.agent-handoff/`。
 
-将 `codex` 换成 `claude`、`cursor` 或 `antigravity` 即可。默认安装只处理探测到的客户端；不会因为未找到配置就给全部客户端创建目录。
+### 1. 在 Codex 中保存当前进展
 
-已有相同配置会保留；遇到不同的自定义配置或同名 Skill，程序会保留原文件并说明冲突。[高级教程](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/docs/advanced.md)介绍目录、备份及 `--force` 的处理方式。
+在正在开发的对话中直接输入：
 
-## 完成一次交接
+> 交接 登录功能。请保存当前目标、已完成内容、关键文件、采用的方案和下一步。已完成邮箱格式校验，下一步补登录失败提示和对应测试，继续使用项目现有的认证接口。
 
-在 Agent A 中输入：
+Codex 会整理当前对话并调用保存工具。保存后的交接摘要大致如下，具体文件路径由 Agent 根据你的项目填写：
 
-> 交接 登录功能。请保存当前目标、已完成内容、关键决策和下一步。
+| 摘要内容 | 本案例中的信息 |
+|---|---|
+| 主题 | 登录功能 |
+| 当前目标 | 完成网站登录流程 |
+| 已完成 | 邮箱格式校验 |
+| 关键文件 | 当前项目中修改过的登录页面和测试文件 |
+| 采用的方案 | 使用项目现有的认证接口 |
+| 下一步 | 补登录失败提示和对应测试 |
 
-然后在同一台电脑的 Agent B 中输入：
+看到保存成功和主题名后，就可以切换客户端。
 
-> 继续 登录功能。
+### 2. 在 Claude Code 中恢复并继续
 
-两个客户端需使用同一交接目录；默认安装会使用相同的默认目录。Agent 会读取该主题的摘要，继续下一步。
+打开同一项目的新对话，输入：
+
+> 继续 登录功能。先读取交接摘要，再从补登录失败提示和对应测试开始。
+
+Claude Code 会加载“登录功能”这个主题，结合项目中的实际文件接着开发。交接提供任务摘要和文件线索，代码仍保存在原项目目录中。
+
+如果不记得主题名，先说 **“看交接”**，从列表里选一个，再说“继续 主题名”。
+
+### 3. 再次切换时更新同一个主题
+
+例如 Claude Code 已补好失败提示，你准备换回 Codex 检查跳转，可以说：
+
+> 交接 登录功能。请按当前进展更新这个主题：失败提示和对应测试已完成，下一步检查登录成功后的跳转。
+
+然后在 Codex 中说 **“继续 登录功能”**，即可读取更新后的进展。同名保存会更新这个主题；其他任务使用不同主题名。
+
+### 4. 做完后结束交接
+
+> 结束交接 登录功能。
+
+这会删除该主题的活跃交接文件并更新列表。需要保留记录时，可以说“结束交接 登录功能，并归档到 C:/AgentData/handoff-archive”；归档目录换成你自己的路径。
+
+### 常用说法速查
 
 | 想做什么 | 对 Agent 说 |
 |---|---|
@@ -52,7 +79,7 @@ npx -y agent-handoff-mcp@latest init --target codex
 | 结束一个主题 | 结束交接 登录功能 |
 | 给网页版 AI 使用 | 导出 登录功能 |
 
-不同对话请使用不同主题名。同名保存会更新原主题；有多个候选而只说“继续”时，先选择主题。保存由明确的交接指令触发。
+有多个候选而只说“继续”时，先选择主题。保存由明确的交接指令触发。
 
 Skill 提供这些协作规则，MCP 工具执行实际文件操作。客户端对 Skill、Prompt 的显示方式不同；无需记住各自的斜杠命令。
 
@@ -81,6 +108,14 @@ npx -y agent-handoff-mcp@latest init --dir "C:/notes/wiki-vault/_handoff"
 自动安装针对本机个人配置；远程、云端或组织管理的环境可能有独立设置。安装结果以终端输出和客户端实际发现的工具为准。
 
 ## 遇到问题
+
+没有探测到客户端时，先安装并启动一次你的 AI 客户端，或明确指定目标：
+
+```bash
+npx -y agent-handoff-mcp@latest init --target codex
+```
+
+将 `codex` 换成 `claude`、`cursor` 或 `antigravity` 即可。默认安装只处理探测到的客户端。已有相同配置会保留；不同的自定义配置或同名 Skill 会保留并提示冲突，处理方式见[高级教程](https://github.com/648428732qq-sketch/agent-handoff-mcp/blob/main/docs/advanced.md)。
 
 先检查环境：
 
