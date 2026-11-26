@@ -1,0 +1,43 @@
+name: Bug Report（问题反馈）
+description: 反馈 agent-handoff-mcp 的异常、兼容性或交接失败问题
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！为了最快定位修复，请先在终端运行 `npx -y agent-handoff-mcp report`（或在 Agent 里让它调用 `handoff_diagnostics`），把生成的**脱敏诊断信息**粘贴到下方（不包含任何私人对话内容）。
+
+  - type: checkboxes
+    id: agents
+    attributes:
+      label: 涉及的 AI Agent（可多选）
+      options:
+        - label: Antigravity
+        - label: Codex
+        - label: Trae
+        - label: WorkBuddy
+        - label: Claude Code
+        - label: Cursor / Windsurf
+        - label: Web AI (CLI export)
+        - label: 其他
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述与复现步骤
+      placeholder: |
+        1. 我在 <Agent A> 里执行了...
+        2. 切到 <Agent B> 后执行了...
+        3. 预期结果 vs 实际报错...
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: 脱敏诊断日志（运行 npx -y agent-handoff-mcp report 生成）
+      description: 日志已自动隐藏用户名路径，且永不记录对话正文。
+      render: markdown
+    validations:
+      required: true

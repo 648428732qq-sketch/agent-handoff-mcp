@@ -1,0 +1,12 @@
+name: Feature / New Agent Support（新功能或新 Agent 适配）
+description: 建议新功能，或申请适配新的 AI Agent 客户端
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 你希望新增什么能力或适配哪个 Agent？
+      placeholder: 例如：希望 `init` 命令支持一键配置 XXX 客户端，它的配置文件路径是...
+    validations:
+      required: true

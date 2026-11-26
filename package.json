@@ -1,0 +1,58 @@
+{
+  "name": "agent-handoff-mcp",
+  "version": "0.1.0",
+  "description": "Cross-agent isolated conversation handoff MCP server, CLI, and Skill for Antigravity, Codex, Trae, WorkBuddy, Claude Code, Cursor, and Web AI.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "handoff",
+    "context-sharing",
+    "obsidian",
+    "codex",
+    "antigravity",
+    "trae",
+    "workbuddy",
+    "claude-code",
+    "cursor"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/648428732qq-sketch/agent-handoff-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/648428732qq-sketch/agent-handoff-mcp/issues"
+  },
+  "homepage": "https://github.com/648428732qq-sketch/agent-handoff-mcp#readme",
+  "type": "module",
+  "main": "dist/src/cli.js",
+  "bin": {
+    "agent-handoff-mcp": "dist/src/cli.js"
+  },
+  "files": [
+    "dist/src",
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "docs/images"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/src/cli.js",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.3"
+  }
+}
