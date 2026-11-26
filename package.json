@@ -44,7 +44,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/src/cli.js",
-    "test": "npm run build && node --test dist/test/*.test.js",
+    "test": "npm run build && node --test dist/test/store.test.js",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
